@@ -15,7 +15,7 @@ function provideHover(
   }
 
   // 文件路径
-  const allFile = utils.getLocations(document) || [];
+  const allFile = utils.getLocations();
 
   // 未配置文件路径
   if (allFile.length === 0) {

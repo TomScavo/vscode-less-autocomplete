@@ -5,6 +5,8 @@ const lessToJs = require("less-vars-to-js");
 const getColor = require("get-css-colors");
 const colorAlpha = require("color-alpha");
 
+import getImportsPath from "./loadLessWithImports";
+
 interface LessToJsConfig {
   resolveVariables?: boolean;
   dictionary?: Record<string, string>;
@@ -26,30 +28,14 @@ const myRequire = (str: string) => {
 
 const utils = {
   // 获得less文件路径数组,${folder}转为工作文件夹路径
-  getLocations: (document?: vscode.TextDocument) => {
-    let workspace: string | undefined;
-    if (document) {
-      workspace = vscode.workspace.getWorkspaceFolder(document.uri)?.uri.fsPath;
-    }
-
-    const handlePath = (paths: string[]) => {
-      return paths.map((v) => {
-        if (workspace) {
-          return path.join(v.replace("${folder}", workspace));
-        } else {
-          return path.join(v);
-        }
-      });
-    };
-    const locations: string | string[] | undefined = vscode.workspace
-      .getConfiguration()
-      .get("lessVars.locations");
-    if (typeof locations === "string") {
-      return handlePath([locations]);
-    } else if (locations instanceof Array) {
-      return handlePath(locations);
+  getLocations: () => {
+    const activeEditor = vscode.window.activeTextEditor?.document;
+    if (activeEditor) {
+      const { uri: activeEditorUri, fileName: activeEditorEntry } =
+        activeEditor;
+      return getImportsPath(activeEditorUri, activeEditorEntry);
     } else {
-      return false;
+      return [];
     }
   },
   // 获得全部变量
@@ -81,6 +67,9 @@ const utils = {
   getDepVars: (allVars: Record<string, string>) => {
     const allDepVars: Record<string, DepValue[]> = {};
     for (let key in allVars) {
+      if (allVars[key].includes("\r") || allVars[key].includes("\n")) {
+        continue;
+      }
       const depValue = [
         {
           key,
