@@ -1,8 +1,10 @@
 {
-  "name": "less-autocomplete",
-  "displayName": "less-autocomplete",
+  "name": "fuxi-less-autocomplete",
+  "displayName": "Fuxi Less Autocomplete",
   "description": "可提示less变量的VS Code插件",
-  "version": "0.0.1",
+  "version": "0.0.3",
+  "author": "fuxi",
+  "publisher": "Scavo",
   "engines": {
     "vscode": "^1.27.0"
   },
@@ -10,7 +12,7 @@
     "less",
     "vars"
   ],
-  "icon": "images/icon.jpg",
+  "icon": "images/icon.png",
   "categories": [
     "Other"
   ],
@@ -34,7 +36,8 @@
     "test-watch": "tsc -watch -p ./",
     "pretest": "npm run test-compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "build": "vsce package"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",
