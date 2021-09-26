@@ -11,6 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
   require("./hover")(context); // 悬停提示
   require("./completionAt")(context); // 自动补全@
   require("./completionEq")(context); // 自动补全=
+  require("./completionVars")(context); // 自动补全vars（通过"--x"触发）
 
   // 删除文字命令，在eq功能执行后删除颜色
   context.subscriptions.push(

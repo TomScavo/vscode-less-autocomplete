@@ -28,12 +28,12 @@ const myRequire = (str: string) => {
 
 const utils = {
   // 获得less文件路径数组,${folder}转为工作文件夹路径
-  getLocations: () => {
+  getLocations: (suffix?: string) => {
     const activeEditor = vscode.window.activeTextEditor?.document;
     if (activeEditor) {
       const { uri: activeEditorUri, fileName: activeEditorEntry } =
         activeEditor;
-      return getImportsPath(activeEditorUri, activeEditorEntry);
+      return getImportsPath(activeEditorUri, activeEditorEntry, suffix);
     } else {
       return [];
     }
