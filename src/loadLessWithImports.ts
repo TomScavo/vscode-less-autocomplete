@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import { resolve, dirname } from "path";
 import { readFileSync } from "fs";
 
+const fileSuffixs = ["css", "less"];
+
 function getRegexpMatches(regexp: RegExp, text: string) {
   const matches = [];
   const lastIndex = regexp.lastIndex;
@@ -21,7 +23,11 @@ function getRegexpMatches(regexp: RegExp, text: string) {
 
 const importRegExp = /^@import\s+['"]([^'"]+)['"];$/gm;
 
-export default function getImportsPath(uri: vscode.Uri, entry: string) {
+export default function getImportsPath(
+  uri: vscode.Uri,
+  entry: string,
+  suffix: string = "less"
+) {
   const memo: string[] = [];
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri as any)?.uri
     .fsPath;
@@ -37,12 +43,21 @@ export default function getImportsPath(uri: vscode.Uri, entry: string) {
     }
     const entryPath = resolve(workspaceFolder || "", entry);
     const input = readFileSync(entryPath, "utf8");
+    const m = getRegexpMatches(importRegExp, input);
     const imports: any[] = getRegexpMatches(importRegExp, input).map(
       (match) => {
         const importPath = match[1];
-        const fullImportPath = /\.less$/.test(importPath)
+        for (const fileSuffix of fileSuffixs) {
+          if (
+            fileSuffix !== suffix &&
+            new RegExp(`\\.${fileSuffix}$`).test(importPath)
+          ) {
+            return;
+          }
+        }
+        const fullImportPath = new RegExp(`\\.${suffix}$`).test(importPath)
           ? importPath
-          : `${importPath}.less`;
+          : `${importPath}.${suffix}`;
         const resolvedImportPath = /^~/.test(importPath)
           ? resolve(root, "node_modules", fullImportPath.slice(1))
           : resolve(dirname(entryPath), fullImportPath);
@@ -57,17 +72,16 @@ export default function getImportsPath(uri: vscode.Uri, entry: string) {
       }
     );
     return {
-      imports:
-        imports[0] !== undefined
-          ? imports.reduce(
-              (acc, { path, imports: nestedImports }) => [
-                ...acc,
-                ...nestedImports,
-                path,
-              ],
-              []
-            )
-          : [],
+      imports: imports
+        .filter((value) => value !== undefined)
+        .reduce(
+          (acc, { path, imports: nestedImports }) => [
+            ...acc,
+            ...nestedImports,
+            path,
+          ],
+          []
+        ),
     };
   }
 

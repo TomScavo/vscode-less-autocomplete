@@ -17,13 +17,6 @@ function provideHover(
   // 文件路径
   const allFile = utils.getLocations();
 
-  // 未配置文件路径
-  if (allFile.length === 0) {
-    return new vscode.Hover(
-      "请先在settings.json中配置变量文件路径,配置项为lessVars.locations"
-    );
-  }
-
   // 检测路径配置是否正确
   const error = [];
   for (let i = 0; i < allFile.length; i++) {

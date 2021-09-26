@@ -1,10 +1,14 @@
 {
   "name": "fuxi-less-autocomplete",
   "displayName": "Fuxi Less Autocomplete",
-  "description": "可提示less变量的VS Code插件",
-  "version": "0.0.3",
+  "description": "工具类、less 变量自动补全的VS Code插件",
+  "version": "0.0.4",
   "author": "fuxi",
   "publisher": "Scavo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vscode-less"
+  },
   "engines": {
     "vscode": "^1.27.0"
   },
@@ -37,9 +41,10 @@
     "pretest": "npm run test-compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
-    "build": "vsce package"
+    "build": "npm run package && vsce package"
   },
   "devDependencies": {
+    "@types/css": "^0.0.33",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.2.2",
     "@types/node": "14.x",
@@ -58,6 +63,7 @@
   "dependencies": {
     "color-alpha": "^1.1.3",
     "color-rgba": "^2.2.3",
+    "css": "^3.0.0",
     "get-css-colors": "^4.0.0",
     "less-vars-to-js": "^1.3.0"
   }
