@@ -61,7 +61,7 @@ async function provideCompletionItems(
     return null;
   }
 
-  return new CompletionList(items).items;
+  return new CompletionList(items);
 }
 
 function resolveCompletionItem() {
