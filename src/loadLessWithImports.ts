@@ -21,7 +21,7 @@ function getRegexpMatches(regexp: RegExp, text: string) {
   return matches;
 }
 
-const importRegExp = /^@import\s+['"]([^'"]+)['"];$/gm;
+const importRegExp = /^@import\s+(\([A-Za-z\s,]+\))?\s*['"]([^'"]+)['"];$/gm;
 
 export default function getImportsPath(
   uri: vscode.Uri,
@@ -46,7 +46,7 @@ export default function getImportsPath(
     const m = getRegexpMatches(importRegExp, input);
     const imports: any[] = getRegexpMatches(importRegExp, input).map(
       (match) => {
-        const importPath = match[1];
+        const importPath = match[match.length - 1];
         for (const fileSuffix of fileSuffixs) {
           if (
             fileSuffix !== suffix &&
@@ -59,7 +59,9 @@ export default function getImportsPath(
           ? importPath
           : `${importPath}.${suffix}`;
         const resolvedImportPath = /^~/.test(importPath)
-          ? resolve(root, "node_modules", fullImportPath.slice(1))
+          ? /^~@\//.test(importPath)
+            ? resolve(root, "src", fullImportPath.slice(3))
+            : resolve(root, "node_modules", fullImportPath.slice(1))
           : resolve(dirname(entryPath), fullImportPath);
         if (!memo.includes(resolvedImportPath)) {
           memo.push(resolvedImportPath);
