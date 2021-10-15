@@ -43,7 +43,6 @@ export default function getImportsPath(
     }
     const entryPath = resolve(workspaceFolder || "", entry);
     const input = readFileSync(entryPath, "utf8");
-    const m = getRegexpMatches(importRegExp, input);
     const imports: any[] = getRegexpMatches(importRegExp, input).map(
       (match) => {
         const importPath = match[match.length - 1];

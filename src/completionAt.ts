@@ -7,8 +7,9 @@ function provideCompletionItems(
   document: vscode.TextDocument,
   position: vscode.Position
 ) {
+  const lineText = document.lineAt(position).text;
   // 光标位置不是@不处理
-  if (document.lineAt(position).text[position.character - 1] !== "@") {
+  if (lineText[position.character - 1] !== "@") {
     return;
   }
 
@@ -35,23 +36,27 @@ function provideCompletionItems(
       allDepVars[key][allDepVars[key].length - 1].value
     );
 
+    const insertText = lineText.includes(";") ? key : `${key};`;
+
     if (lastColor && lastColor.length) {
       // 对于 color 属性定义
       total.push({
         detail: lastColor[lastColor.length - 1],
         label: {
-          label: `${key}`,
+          label: key,
           description: lastColor[lastColor.length - 1],
         },
+        insertText,
         kind: vscode.CompletionItemKind.Color,
         documentation,
       });
     } else {
       total.push({
         label: {
-          label: `${key}`,
+          label: key,
           description: allDepVars[key][0].value,
         },
+        insertText,
         kind: vscode.CompletionItemKind.Variable,
         documentation,
       });

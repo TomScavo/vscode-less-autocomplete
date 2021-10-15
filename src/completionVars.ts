@@ -11,7 +11,6 @@ async function provideCompletionItems(
   const items: vscode.CompletionItem[] = [];
   const files = await vscode.workspace.findFiles("**/*.css", "/node_modules/");
   const allFile = files.map((file) => file.fsPath);
-  console.log(allFile);
 
   allFile.forEach((filePath) => {
     const file = fs.readFileSync(filePath, "utf-8");
