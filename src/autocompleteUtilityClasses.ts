@@ -110,10 +110,17 @@ function getUtilityClassesFilePath(document: vscode.TextDocument) {
 }
 
 function cssFileStringToClassNameValueMap(document: vscode.TextDocument, position: vscode.Position, isLessFile: boolean) {
-	const beforeText = getTextBeforePosition(document, position);
+	const beforeText = getTextBeforePosition(document, position).replaceAll(' ', '');
 	const classNameRegex = /.*(className=([^}])+)$/;
 	const isValid = classNameRegex.test(beforeText);
 	if (!isValid && !isLessFile) return {};
+
+	if (isLessFile) {
+		const insideLeftBraceRegex = /.*{[^}]*$/;
+		const isValid = insideLeftBraceRegex.test(beforeText);
+		if (!isValid) return {};
+	}
+	if (beforeText.slice(-1) !== '.' && isLessFile) return {};
 
 	try {
     const utilityClassesFilePath = getUtilityClassesFilePath(document);
@@ -144,7 +151,7 @@ function provideCompletionItems({document, position, isLessFile = true}: {docume
 export default function autocompleteUtilityClasses(context: vscode.ExtensionContext) {
 	const lessFileProvider = vscode.languages.registerCompletionItemProvider('less', {
 		provideCompletionItems: (document, position) => provideCompletionItems({document, position})
-	});
+	}, '.');
 	context.subscriptions.push(lessFileProvider);
 
 	const jsxProvider = vscode.languages.registerCompletionItemProvider(
